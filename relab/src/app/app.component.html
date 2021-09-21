@@ -1,0 +1,18 @@
+{{title}}
+<!--Centriamo la mappa alle nostre coordinate-->
+<google-map [center]="center">  
+  <!--Mettiamo un marker alle nostre coordinate-->
+  <map-marker [position]="position" 
+              [label]="label" 
+              [title]="title"
+              [options] = "markerOptions">
+  </map-marker>
+
+  <map-circle [center]="position"
+              [radius]="50"
+              [options] = 'circleOptions'>
+  </map-circle>
+
+  <map-polygon [paths]="vertices" >
+  </map-polygon>
+</google-map>
