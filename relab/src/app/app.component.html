@@ -1,6 +1,6 @@
 {{title}}
 <!--Centriamo la mappa alle nostre coordinate-->
-<google-map [center]="center">  
+<google-map  #mapRef [center]="center">  
   <!--Mettiamo un marker alle nostre coordinate-->
   <map-marker [position]="position" 
               [label]="label" 

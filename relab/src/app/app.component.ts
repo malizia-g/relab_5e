@@ -1,11 +1,14 @@
-import { Component } from '@angular/core';
+import { ElementRef } from '@angular/core';
+import { AfterViewInit } from '@angular/core';
+import { Component, ViewChild } from '@angular/core';
+import { GoogleMap } from '@angular/google-maps'
 
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.css']
 })
-export class AppComponent {
+export class AppComponent implements AfterViewInit {
   title = 'server mappe';
   //Aggiungiamo latitudine e longitudine di un luogo
   center: google.maps.LatLngLiteral;
@@ -31,6 +34,11 @@ export class AppComponent {
     ];
 
     this.markerOptions = { icon: iconData }
+  }
+
+  @ViewChild('mapRef') mapRef: GoogleMap;
+  ngAfterViewInit() {
+    console.log(this.mapRef.data.loadGeoJson("https://storage.googleapis.com/mapsdevsite/json/google.json"));
   }
 
 }
