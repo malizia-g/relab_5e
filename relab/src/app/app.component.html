@@ -1,7 +1,9 @@
 {{title}}
 <!--Centriamo la mappa alle nostre coordinate-->
-<google-map  #mapRef [center]="center">  
-  <!--Mettiamo un marker alle nostre coordinate-->
+<google-map  #mapRef [center]="center" [zoom]="zoom" [width]="1000">  
+<map-marker *ngFor="let markerOption of markerList" [options] = "markerOption">
+</map-marker>
+  <!--Mettiamo un marker alle nostre coordinate
   <map-marker [position]="position" 
               [label]="label" 
               [title]="title"
@@ -14,5 +16,5 @@
   </map-circle>
 
   <map-polygon [paths]="vertices" >
-  </map-polygon>
+  </map-polygon>-->
 </google-map>
