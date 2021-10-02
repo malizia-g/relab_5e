@@ -1,20 +1,6 @@
 {{title}}
 <!--Centriamo la mappa alle nostre coordinate-->
-<google-map  #mapRef [center]="center" [zoom]="zoom" [width]="1000">  
-<map-marker *ngFor="let markerOption of markerList" [options] = "markerOption">
-</map-marker>
-  <!--Mettiamo un marker alle nostre coordinate
-  <map-marker [position]="position" 
-              [label]="label" 
-              [title]="title"
-              [options] = "markerOptions">
+<google-map #mapRef [center]="center" [zoom]="zoom" [width]="1000">
+  <map-marker *ngFor="let markerOption of markerList" [options]="markerOption">
   </map-marker>
-
-  <map-circle [center]="position"
-              [radius]="50"
-              [options] = 'circleOptions'>
-  </map-circle>
-
-  <map-polygon [paths]="vertices" >
-  </map-polygon>-->
 </google-map>
