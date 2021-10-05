@@ -12,6 +12,7 @@ import { GeoFeatureCollection } from './models/geojson.model';
   styleUrls: ['./app.component.css']
 })
 export class AppComponent implements AfterViewInit {
+
   title = 'server mappe';
   //Variabile che conterrà i nostri oggetti GeoJson
   geoJsonObject: GeoFeatureCollection;
@@ -41,36 +42,55 @@ export class AppComponent implements AfterViewInit {
       let m: google.maps.MarkerOptions =
       {
         position: new google.maps.LatLng(iterator.WGS84_X, iterator.WGS84_Y),
-        icon : this.findImage(iterator.CI_VETTORE)
+        icon: this.findImage(iterator.CI_VETTORE)
       }
       //Marker(iterator.WGS84_X,iterator.WGS84_Y,iterator.CI_VETTORE);
       this.markerList.push(m);
     }
+    this.center = this.LatLngMedia(data);
   }
 
-  findImage(label: string) : google.maps.Icon {
+  LatLngMedia(data: Ci_vettore[]): google.maps.LatLngLiteral {
+    let latTot = 0; //Uso queste due variabili per calcolare latitudine e longitudine media
+    let lngTot = 0; //E centrare la mappa
+    for (const iterator of data) {
+      latTot += iterator.WGS84_X; //Sommo tutte le latitutidini e longitudini
+      lngTot += iterator.WGS84_Y;
+    }
+
+    return { lat: latTot / data.length, lng: lngTot / data.length };
+  }
+
+  findImage(label: string): google.maps.Icon {
     if (label.includes("Gas")) {
-      return { url: './assets/img/gas.ico', scaledSize: new google.maps.Size(32,32) };
+      return { url: './assets/img/gas.ico', scaledSize: new google.maps.Size(32, 32) };
     }
     if (label.includes("elettrica")) {
-      return { url: './assets/img/electricity.ico', scaledSize: new google.maps.Size(32,32) };
+      return { url: './assets/img/electricity.ico', scaledSize: new google.maps.Size(32, 32) };
     }
     //Se non viene riconosciuta nessuna etichetta ritorna l'icona undefined
-      return {url: './assets/img/undefined.ico' , scaledSize: new google.maps.Size(32,32)}
+    return { url: './assets/img/undefined.ico', scaledSize: new google.maps.Size(32, 32) }
   }
 
 
   //Una volta che la pagina web è caricata, viene lanciato il metodo ngOnInit scarico i    dati 
   //dal server
   ngOnInit() {
-    this.obsGeoData = this.http.get<GeoFeatureCollection>("https://5000-fuchsia-reindeer-psolbb4g.ws-eu18.gitpod.io/ci_vettore/50");
-    this.obsGeoData.subscribe(this.prepareData);
 
-    this.obsCiVett = this.http.get<Ci_vettore[]>("https://5000-fuchsia-reindeer-psolbb4g.ws-eu18.gitpod.io/ci_vettore/140");
-    this.obsCiVett.subscribe(this.prepareCiVettData);
   }
 
+  /*this.obsGeoData = this.http.get<GeoFeatureCollection>("https://5000-fuchsia-reindeer-psolbb4g.ws-eu18.gitpod.io/ci_vettore/50");
+   this.obsGeoData.subscribe(this.prepareData);*/
 
+
+
+  cambiaFoglio(foglio: HTMLInputElement): boolean {
+    let val = foglio.value; //Commenta qui
+    this.obsCiVett = this.http.get<Ci_vettore[]>(`https://5000-fuchsia-reindeer-psolbb4g.ws-eu18.gitpod.io/ci_vettore/${val}`);  //Commenta qui
+    this.obsCiVett.subscribe(this.prepareCiVettData); //Commenta qui
+    console.log(val);
+    return false;
+  }
   @ViewChild('mapRef') mapRef: GoogleMap;
   ngAfterViewInit() {
     this.mapRef.data.addGeoJson(this.geoJsonObject);
@@ -89,25 +109,6 @@ export class AppComponent implements AfterViewInit {
     });
   }
 
-  /*markerGenerator()
-  {
-    this.markerList =[
-      {
-        position : {
-          lng : this.geoJsonObject.features[0].geometry.coordinates[0][0][0],
-          lat : this.geoJsonObject.features[0].geometry.coordinates[0][0][1]
-        },
-        label: String(this.geoJsonObject.features[0].properties.id),
-      },
-      {
-        position : {
-          lng : this.geoJsonObject.features[1].geometry.coordinates[0][0][0],
-          lat : this.geoJsonObject.features[1].geometry.coordinates[0][0][1]
-        },
-        label: String(this.geoJsonObject.features[1].properties.id),
-      },
-    ]
 
-  }*/
 
 }

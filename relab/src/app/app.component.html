@@ -4,3 +4,14 @@
   <map-marker *ngFor="let markerOption of markerList" [options]="markerOption">
   </map-marker>
 </google-map>
+
+<form>
+  <h3 >Vettori energetici</h3>
+  <div>
+    <input name="title" #foglio> <!--Aggiunta una variabile di template-->
+    <label for="title">Seleziona foglio</label>
+  </div>
+  <button (click)="cambiaFoglio(foglio)"> <!--Passiamo le variabili come parametro --> 
+    Cambia
+  </button>
+</form>
