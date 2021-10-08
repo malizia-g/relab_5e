@@ -24,6 +24,8 @@ export class AppComponent implements AfterViewInit {
 
   markerList: google.maps.MarkerOptions[];
   obsCiVett: Observable<Ci_vettore[]>;
+  circleCenter: google.maps.LatLng;
+  circleRadius =  200;
 
   constructor(public http: HttpClient) {
     //Facciamo iniettare il modulo HttpClient dal framework Angular (ricordati di importare la libreria)
@@ -91,6 +93,15 @@ export class AppComponent implements AfterViewInit {
     console.log(val);
     return false;
   }
+
+//Aggiungi il gestore del metodo mapClicked
+mapClicked($event: google.maps.MapMouseEvent) {
+  console.log($event);
+  let coords= $event.latLng; //Queste sono le coordinate cliccate
+  this.center = { lat: coords.lat(), lng: coords.lng() };
+}
+
+
   @ViewChild('mapRef') mapRef: GoogleMap;
   ngAfterViewInit() {
     this.mapRef.data.addGeoJson(this.geoJsonObject);
