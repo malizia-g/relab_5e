@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
-import { AfterViewInit, Sanitizer } from '@angular/core';
+import { AfterViewInit, ChangeDetectorRef, Sanitizer } from '@angular/core';
 import { Component, ViewChild } from '@angular/core';
-import { GoogleMap } from '@angular/google-maps'
+import { GoogleMap, MapCircle } from '@angular/google-maps'
 import { Observable } from 'rxjs';
 import { Ci_vettore } from './models/ci_vett.model';
 import { GeoFeatureCollection } from './models/geojson.model';
@@ -25,9 +25,11 @@ export class AppComponent implements AfterViewInit {
   markerList: google.maps.MarkerOptions[];
   obsCiVett: Observable<Ci_vettore[]>;
   circleCenter: google.maps.LatLng;
-  circleRadius =  200;
+  circleOptions: google.maps.CircleOptions;
 
-  constructor(public http: HttpClient) {
+
+
+  constructor(public http: HttpClient, public changeDetector : ChangeDetectorRef) {
     //Facciamo iniettare il modulo HttpClient dal framework Angular (ricordati di importare la libreria)
   }
 
@@ -78,7 +80,7 @@ export class AppComponent implements AfterViewInit {
   //Una volta che la pagina web è caricata, viene lanciato il metodo ngOnInit scarico i    dati 
   //dal server
   ngOnInit() {
-
+    this.circleOptions = { fillColor: 'red', clickable: true, editable: true, radius: 200, visible : false }
   }
 
   /*this.obsGeoData = this.http.get<GeoFeatureCollection>("https://5000-fuchsia-reindeer-psolbb4g.ws-eu18.gitpod.io/ci_vettore/50");
@@ -88,19 +90,33 @@ export class AppComponent implements AfterViewInit {
 
   cambiaFoglio(foglio: HTMLInputElement): boolean {
     let val = foglio.value; //Commenta qui
-    this.obsCiVett = this.http.get<Ci_vettore[]>(`https://5000-fuchsia-reindeer-psolbb4g.ws-eu18.gitpod.io/ci_vettore/${val}`);  //Commenta qui
+    this.obsCiVett = this.http.get<Ci_vettore[]>(`https://5000-fuchsia-reindeer-psolbb4g.ws-eu17.gitpod.io/ci_vettore/${val}`);  //Commenta qui
     this.obsCiVett.subscribe(this.prepareCiVettData); //Commenta qui
     console.log(val);
+    this.circleRef.circle?.setVisible(false);
     return false;
   }
 
-//Aggiungi il gestore del metodo mapClicked
-mapClicked($event: google.maps.MapMouseEvent) {
-  console.log($event);
-  let coords= $event.latLng; //Queste sono le coordinate cliccate
-  this.center = { lat: coords.lat(), lng: coords.lng() };
-}
+  //Aggiungi il gestore del metodo mapClicked
+  mapClicked($event: google.maps.MapMouseEvent) {
+    let coords = $event.latLng; //Queste sono le coordinate cliccate
+    this.center = { lat: coords.lat(), lng: coords.lng() };
+    this.circleRef.circle?.setVisible(true);
+  }
 
+  @ViewChild(MapCircle) circleRef: MapCircle;
+  circleRightClicked($event: google.maps.MapMouseEvent) {
+    this.circleRef.circle?.setVisible(false);
+
+    let raggioInGradi = (this.circleRef.getRadius() * 0.00001)/1.1132;
+    let lat = this.circleRef.getCenter().lat();
+    let lng = this.circleRef.getCenter().lng();
+
+    //Posso riusare lo stesso observable e lo stesso metodo di gestione del metodo    
+    //cambiaFoglio poichè riceverò lo stesso tipo di dati
+    this.obsCiVett = this.http.get<Ci_vettore[]>(`https://5000-fuchsia-reindeer-psolbb4g.ws-eu17.gitpod.io/ci_geovettore/${lat}/${lng}/${raggioInGradi}`);
+    this.obsCiVett.subscribe(this.prepareCiVettData);
+  }
 
   @ViewChild('mapRef') mapRef: GoogleMap;
   ngAfterViewInit() {
